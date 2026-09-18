@@ -1,1 +1,10 @@
-@brunogriffa1 @NachoMaldo02 @FacuPerron @ValeTessini
+*                                           @brunogriffa1
+/.github/                                   @brunogriffa1
+/pom.xml                                    @brunogriffa1
+
+/src/main/java/com/example/demo/modelo/         @NachoMaldo02
+/src/main/java/com/example/demo/repositorios/   @FacuPerron
+/src/main/java/com/example/demo/servicios/      @ValeTessini @NachoMaldo02
+/src/main/java/com/example/demo/controladores/  @FacuPerron @ValeTessini
+
+/src/test/                                  @brunogriffa1 @NachoMaldo02 @FacuPerron @ValeTessini
