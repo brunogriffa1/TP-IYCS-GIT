@@ -1,11 +1,13 @@
 package com.example.demo.controladores;
 
+import com.example.demo.excepciones.EntidadNoEncontradaException;
 import com.example.demo.excepciones.ValidacionException;
 import com.example.demo.modelo.Conserje;
 import com.example.demo.servicios.ConserjeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.demo.excepciones.EntidadNoEncontradaException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,6 +101,32 @@ public class ConserjeControlador {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
                 "error", "Error al listar conserjes: " + e.getMessage()
+            ));
+        }
+    }
+    // --- ELIMINAR CONSERJE ---
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Integer id) {
+        try {
+            System.out.println(" Eliminando conserje con ID: " + id);
+
+            conserjeService.eliminarConserje(id);
+
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", " Conserje eliminado correctamente",
+                "id", id
+            ));
+
+        } catch (EntidadNoEncontradaException e) {
+            return ResponseEntity.status(404).body(Map.of(
+                "success", false,
+                "message", " " + e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of(
+                "success", false,
+                "message", " Error interno del servidor"
             ));
         }
     }
