@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,20 @@ public class HuespedServiceTest {
     @InjectMocks
     private HuespedService huespedService;
 
+    // Fecha que cumple la validación (mayor de 18 y menor de 120 años)
+    private static final LocalDate FECHA_NACIMIENTO_VALIDA = LocalDate.of(1990, 5, 20);
+
+    // Dirección que pasa todas las validaciones de validarDatosHuesped()
+    private Direccion direccionValida() {
+        Direccion d = new Direccion();
+        d.setCalle("SAN MARTIN");
+        d.setNumero(123);
+        d.setLocalidad("SANTA FE");
+        d.setProvincia("SANTA FE");
+        d.setPais("ARGENTINA");
+        return d;
+    }
+    
     // --- ALTA ---
     @Test
     void darAltaHuesped_DatosCorrectos_DeberiaGuardar() throws ValidacionException {
@@ -36,6 +51,7 @@ public class HuespedServiceTest {
         nuevo.setTipoDocumento("DNI");
         nuevo.setNumeroDocumento("12345678");
         nuevo.setNombre("JUAN");
+        nuevo.setFechaNacimiento(FECHA_NACIMIENTO_VALIDA);
 
         when(huespedRepositorio.findByDocumento("DNI", "12345678")).thenReturn(Optional.empty());
         when(huespedRepositorio.save(any(Huesped.class))).thenReturn(nuevo);
@@ -52,7 +68,8 @@ public class HuespedServiceTest {
         Huesped nuevo = new Huesped();
         nuevo.setTipoDocumento("DNI");
         nuevo.setNumeroDocumento("99999999");
-
+        nuevo.setFechaNacimiento(FECHA_NACIMIENTO_VALIDA);
+        
         when(huespedRepositorio.findByDocumento("DNI", "99999999")).thenReturn(Optional.of(new Huesped()));
 
         assertThrows(ValidacionException.class, () -> huespedService.darAltaHuesped(nuevo));
@@ -112,6 +129,7 @@ public class HuespedServiceTest {
         aModificar.setId(1);
         aModificar.setTipoDocumento("DNI");
         aModificar.setNumeroDocumento("999"); // Cambio a DNI 999
+        aModificar.setFechaNacimiento(FECHA_NACIMIENTO_VALIDA);
 
         Huesped original = new Huesped();
         original.setId(1);
@@ -132,8 +150,10 @@ public class HuespedServiceTest {
         Huesped origen = new Huesped(); 
         origen.setId(1); 
         origen.setTipoDocumento("DNI"); origen.setNumeroDocumento("222"); // Quiere cambiarse al DNI 222
-        origen.setDireccion(new Direccion());
-
+        origen.setFechaNacimiento(FECHA_NACIMIENTO_VALIDA);
+        origen.setNacionalidad("ARGENTINA");
+        origen.setDireccion(direccionValida());
+        
         Huesped destino = new Huesped();
         destino.setId(2); // Ya existe alguien con DNI 222
         destino.setTipoDocumento("DNI"); destino.setNumeroDocumento("222");
