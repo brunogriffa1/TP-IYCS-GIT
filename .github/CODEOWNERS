@@ -6,7 +6,7 @@
 /pom.xml @brunogriffa1
 
 # Responsables por parte del código
-/src/main/java/com/example/demo/modelo/ @NachoMaldo02
+/src/main/java/com/example/demo/modelo/ @brunogriffa1 @NachoMaldo02
 /src/main/java/com/example/demo/repositorios/ @FacuPerron
 /src/main/java/com/example/demo/servicios/ @ValeTessini @NachoMaldo02
 /src/main/java/com/example/demo/controladores/ @FacuPerron @ValeTessini
