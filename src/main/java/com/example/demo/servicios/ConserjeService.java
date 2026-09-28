@@ -1,14 +1,16 @@
 package com.example.demo.servicios;
 
-import com.example.demo.excepciones.ValidacionException;
-import com.example.demo.modelo.Conserje;
-import com.example.demo.repositorios.ConserjeRepositorio;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.example.demo.excepciones.EntidadNoEncontradaException;
+import com.example.demo.excepciones.ValidacionException;
+import com.example.demo.modelo.Conserje;
+import com.example.demo.repositorios.ConserjeRepositorio;
 
 @Service
 @Transactional
@@ -69,13 +71,11 @@ public class ConserjeService {
         return conserjeRepositorio.findAll();
     }
 
-    public void eliminarConserje(Integer id) {
-        if (conserjeRepositorio.existsById(id)) {
-            conserjeRepositorio.deleteById(id);
-            System.out.println(" Conserje eliminado con ID: " + id);
-        } else {
-            throw new RuntimeException("Conserje no encontrado con ID: " + id);
-        }
+        public void eliminarConserje(Integer id) throws EntidadNoEncontradaException {
+        Conserje conserje = conserjeRepositorio.findById(id)
+                .orElseThrow(() -> new EntidadNoEncontradaException("No se puede eliminar. El conserje no existe con ID: " + id));
+        conserjeRepositorio.delete(conserje);
+        System.out.println(" Conserje eliminado con ID: " + id);
     }
 
     public Optional<Conserje> buscarPorId(Integer id) {
