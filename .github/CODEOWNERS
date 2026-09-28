@@ -1,1 +1,15 @@
-@brunogriffa1 @NachoMaldo02 @FacuPerron @ValeTessini
+# Responsable general
+* @brunogriffa1
+
+# Configuración del repositorio y del proyecto
+/.github/ @brunogriffa1
+/pom.xml @brunogriffa1
+
+# Responsables por parte del código
+/src/main/java/com/example/demo/modelo/ @brunogriffa1 @NachoMaldo02
+/src/main/java/com/example/demo/repositorios/ @FacuPerron
+/src/main/java/com/example/demo/servicios/ @ValeTessini @NachoMaldo02
+/src/main/java/com/example/demo/controladores/ @FacuPerron @ValeTessini
+
+# Responsables de los tests
+/src/test/ @brunogriffa1 @NachoMaldo02 @FacuPerron @ValeTessini
