@@ -36,3 +36,6 @@ build/
 .vscode/
 .idea/
 *.log
+
+### Local application configuration ###
+/application-local.properties
