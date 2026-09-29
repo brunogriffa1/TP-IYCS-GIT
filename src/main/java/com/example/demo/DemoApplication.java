@@ -1,10 +1,11 @@
 package com.example.demo; 
 
-import com.example.demo.repositorios.HabitacionRepositorio;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import com.example.demo.repositorios.HabitacionRepositorio;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -25,7 +26,8 @@ public class DemoApplication {
                 // Intentamos listar las habitaciones
                 // Si esto no da error, la conexión es EXITOSA
                 System.out.println("Consultando habitaciones...");
-                habitacionRepositorio.findAll(); 
+                System.out.println("¡Que tenga un gran dia!");
+                habitacionRepositorio.findAll();
                 
                 System.out.println(" ¡CONEXION EXITOSA! La base de datos responde.");
             } catch (Exception e) {
