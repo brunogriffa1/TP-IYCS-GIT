@@ -36,6 +36,9 @@ public interface EstadiaRepositorio extends JpaRepository<Estadia, Integer> {
     
     // Buscar todas las estadías de una habitación
     List<Estadia> findByHabitacionId(Integer habitacionId);
+
+    // Saber si una reserva ya tiene su estadía (check-in hecho)
+    boolean existsByIdReserva(Integer idReserva);
     
     // Buscar consumos de una estadía
     @Query("SELECT c FROM Consumo c WHERE c.estadia.id = :estadiaId")

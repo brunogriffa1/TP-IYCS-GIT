@@ -1,5 +1,7 @@
 package com.example.demo.controladores;
 
+import com.example.demo.excepciones.EntidadNoEncontradaException;
+import com.example.demo.excepciones.ValidacionException;
 import com.example.demo.modelo.Estadia;
 import com.example.demo.servicios.EstadiaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,47 @@ public class EstadiaControlador {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
+    }
+
+    // --- CHECK-IN AUTOSERVICIO (tótem del hotel, sin pasar por recepción) ---
+    @PostMapping("/check-in-autoservicio")
+    public ResponseEntity<?> checkInAutoservicio(@RequestBody CheckInAutoservicioRequest request) {
+        try {
+            Estadia estadia = estadiaService.checkInAutoservicio(
+                request.getIdReserva(), request.getTipoDocumento(), request.getNumeroDocumento());
+
+            String habitacion = String.valueOf(estadia.getHabitacion().getNumero());
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "¡Bienvenido/a " + estadia.getHuesped().getNombre() + "! Su habitación es la " + habitacion + ".",
+                "habitacion", habitacion
+            ));
+        } catch (EntidadNoEncontradaException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of(
+                "success", false,
+                "message", e.getMessage() + " Por favor, acérquese a recepción."
+            ));
+        } catch (ValidacionException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "success", false,
+                "message", e.getMessage() + " Por favor, acérquese a recepción."
+            ));
+        }
+    }
+
+    public static class CheckInAutoservicioRequest {
+        private Integer idReserva;
+        private String tipoDocumento;
+        private String numeroDocumento;
+
+        public Integer getIdReserva() { return idReserva; }
+        public void setIdReserva(Integer idReserva) { this.idReserva = idReserva; }
+
+        public String getTipoDocumento() { return tipoDocumento; }
+        public void setTipoDocumento(String tipoDocumento) { this.tipoDocumento = tipoDocumento; }
+
+        public String getNumeroDocumento() { return numeroDocumento; }
+        public void setNumeroDocumento(String numeroDocumento) { this.numeroDocumento = numeroDocumento; }
     }
 
     // --- CU11: Verificar Historial ---

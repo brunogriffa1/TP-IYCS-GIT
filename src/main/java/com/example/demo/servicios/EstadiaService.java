@@ -3,6 +3,7 @@ package com.example.demo.servicios;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.demo.controladores.EstadiaControlador.CrearEstadiaRequest;
+import com.example.demo.excepciones.EntidadNoEncontradaException;
 import com.example.demo.excepciones.ValidacionException;
 import com.example.demo.modelo.Estadia;
 import com.example.demo.modelo.EstadoHabitacion;
@@ -171,6 +173,68 @@ public class EstadiaService {
             a.setEstadia(guardada);
             huespedRepositorio.save(a);
         }
+        return guardada;
+    }
+
+    // --- CHECK-IN AUTOSERVICIO (tótem del hotel) ---
+    // El huésped ingresa el código de su reserva y su documento. Si todo coincide se ocupa la habitación
+    // sin pasar por recepción; si no, se le indica el motivo para que lo resuelva en recepción (CU15).
+    public Estadia checkInAutoservicio(Integer idReserva, String tipoDocumento, String numeroDocumento)
+            throws EntidadNoEncontradaException, ValidacionException {
+        if (idReserva == null || tipoDocumento == null || numeroDocumento == null) {
+            throw new ValidacionException("Ingrese el código de reserva y su documento.");
+        }
+
+        Reserva reserva = reservaRepositorio.findById(idReserva)
+                .orElseThrow(() -> new EntidadNoEncontradaException("No existe una reserva con el código " + idReserva + "."));
+        if (reserva.getEstado() != EstadoReserva.CONFIRMADA) {
+            throw new ValidacionException("La reserva no está confirmada.");
+        }
+        LocalDate hoy = LocalDate.now();
+        if (hoy.isBefore(reserva.getFechaEntrada())
+                || (reserva.getFechaSalida() != null && !hoy.isBefore(reserva.getFechaSalida()))) {
+            throw new ValidacionException("La reserva no corresponde a la fecha de hoy.");
+        }
+        if (estadiaRepositorio.existsByIdReserva(reserva.getId())) {
+            throw new ValidacionException("El check-in de esta reserva ya fue realizado.");
+        }
+
+        Huesped huesped = huespedRepositorio.findByDocumento(tipoDocumento.trim(), numeroDocumento.trim())
+                .orElseThrow(() -> new EntidadNoEncontradaException("No hay un huésped registrado con ese documento."));
+        // Mismo criterio que el check-in manual: el apellido debe coincidir con el de la reserva
+        if (reserva.getApellidoHuesped() == null || huesped.getApellido() == null
+                || !reserva.getApellidoHuesped().trim().equalsIgnoreCase(huesped.getApellido().trim())) {
+            throw new ValidacionException("El documento ingresado no corresponde al titular de la reserva.");
+        }
+        if (huesped.getEstadia() != null) {
+            throw new ValidacionException("El huésped ya se encuentra alojado.");
+        }
+
+        Habitacion habitacion = reserva.getHabitacion();
+        if (habitacion == null
+                || habitacion.getEstado() == EstadoHabitacion.OCUPADA
+                || habitacion.getEstado() == EstadoHabitacion.FUERA_DE_SERVICIO) {
+            throw new ValidacionException("La habitación reservada no está disponible.");
+        }
+
+        Estadia estadia = new Estadia();
+        estadia.setHabitacion(habitacion);
+        estadia.setHuesped(huesped);
+        estadia.setCheckIn(LocalDateTime.now());
+        long dias = reserva.getFechaSalida() != null
+                ? ChronoUnit.DAYS.between(hoy, reserva.getFechaSalida())
+                : 1;
+        estadia.setCantidadDias((int) Math.max(1, dias));
+        estadia.setCantidadHuespedes(1);
+        estadia.setCantidadHabitaciones(1);
+        estadia.setIdReserva(reserva.getId());
+
+        habitacion.setEstado(EstadoHabitacion.OCUPADA);
+        habitacionRepositorio.save(habitacion);
+
+        Estadia guardada = estadiaRepositorio.save(estadia);
+        huesped.setEstadia(guardada);
+        huespedRepositorio.save(huesped);
         return guardada;
     }
 
