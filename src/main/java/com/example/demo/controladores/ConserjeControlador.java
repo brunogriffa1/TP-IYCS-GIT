@@ -103,10 +103,9 @@ public class ConserjeControlador {
     }
 
     @GetMapping("/stats/count")
-    public ResponseEntity<Map<String, Object>> countConcierges() {
-        return ResponseEntity.ok(Map.of(
-                "total", conserjeService.countConcierges(),
-                "message", "Registered concierges"));
+    public ResponseEntity<Map<String, Long>> countConcierges() {
+        return ResponseEntity.ok(
+                Map.of("total", conserjeService.countConcierges()));
     }
 
     // --- ELIMINAR CONSERJE ---
