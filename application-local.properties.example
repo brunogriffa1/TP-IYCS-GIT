@@ -1,0 +1,5 @@
+# Copy this file to application-local.properties in the project root.
+# Replace these example values with your local MySQL connection settings.
+spring.datasource.url=jdbc:mysql://localhost:3306/hotel_premier
+spring.datasource.username=your_mysql_username
+spring.datasource.password=your_mysql_password
