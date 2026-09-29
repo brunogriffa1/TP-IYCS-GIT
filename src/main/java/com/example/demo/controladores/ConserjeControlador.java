@@ -31,25 +31,22 @@ public class ConserjeControlador {
     public ResponseEntity<?> registrar(@RequestBody Conserje conserje) {
         try {
             System.out.println(" Registrando conserje: " + conserje.getNombre());
-            
+
             boolean registrado = conserjeService.registrarConserje(conserje);
-            
+
             return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", " Conserje registrado correctamente",
-                "id", conserje.getIdConserje()
-            ));
-            
+                    "success", true,
+                    "message", " Conserje registrado correctamente",
+                    "id", conserje.getIdConserje()));
+
         } catch (ValidacionException e) {
             return ResponseEntity.badRequest().body(Map.of(
-                "success", false,
-                "message", " " + e.getMessage()
-            ));
+                    "success", false,
+                    "message", " " + e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
-                "success", false,
-                "message", " Error interno del servidor"
-            ));
+                    "success", false,
+                    "message", " Error interno del servidor"));
         }
     }
 
@@ -58,29 +55,25 @@ public class ConserjeControlador {
     public ResponseEntity<?> login(@RequestBody Conserje conserje) {
         try {
             System.out.println(" Intento de login para: " + conserje.getNombre());
-            
+
             boolean autenticado = conserjeService.autenticar(
-                conserje.getNombre(), 
-                conserje.getContrasena()
-            );
+                    conserje.getNombre(),
+                    conserje.getContrasena());
 
             if (autenticado) {
                 return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "✅ Login exitoso",
-                    "usuario", conserje.getNombre()
-                ));
+                        "success", true,
+                        "message", "✅ Login exitoso",
+                        "usuario", conserje.getNombre()));
             } else {
                 return ResponseEntity.status(401).body(Map.of(
-                    "success", false,
-                    "message", "❌ El usuario o la contraseña no son válidos"
-                ));
+                        "success", false,
+                        "message", "❌ El usuario o la contraseña no son válidos"));
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of(
-                "success", false,
-                "message", "❌ Error: " + e.getMessage()
-            ));
+                    "success", false,
+                    "message", "❌ Error: " + e.getMessage()));
         }
     }
 
@@ -89,13 +82,12 @@ public class ConserjeControlador {
     public ResponseEntity<?> buscarPorNombre(@PathVariable String nombre) {
         try {
             return conserjeService.buscarPorNombre(nombre)
-                .map(conserje -> ResponseEntity.ok(conserje))
-                .orElse(ResponseEntity.notFound().build());
-                
+                    .map(conserje -> ResponseEntity.ok(conserje))
+                    .orElse(ResponseEntity.notFound().build());
+
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
-                "error", "Error al buscar conserje: " + e.getMessage()
-            ));
+                    "error", "Error al buscar conserje: " + e.getMessage()));
         }
     }
 
@@ -106,10 +98,10 @@ public class ConserjeControlador {
             return ResponseEntity.ok(conserjeService.listarTodos());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
-                "error", "Error al listar conserjes: " + e.getMessage()
-            ));
+                    "error", "Error al listar conserjes: " + e.getMessage()));
         }
     }
+
     // --- ELIMINAR CONSERJE ---
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminar(@PathVariable Integer id) {
@@ -119,21 +111,22 @@ public class ConserjeControlador {
             conserjeService.eliminarConserje(id);
 
             return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", " Conserje eliminado correctamente",
-                "id", id
-            ));
+                    "success", true,
+                    "message", " Conserje eliminado correctamente",
+                    "id", id));
 
         } catch (EntidadNoEncontradaException e) {
             return ResponseEntity.status(404).body(Map.of(
-                "success", false,
-                "message", " " + e.getMessage()
-            ));
+                    "success", false,
+                    "message", " " + e.getMessage()));
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return ResponseEntity.status(409).body(Map.of(
+                    "success", false,
+                    "message", "No se puede eliminar el conserje porque tiene registros asociados"));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of(
-                "success", false,
-                "message", " Error interno del servidor"
-            ));
+                    "success", false,
+                    "message", " Error interno del servidor"));
         }
     }
 
