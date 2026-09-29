@@ -71,6 +71,11 @@ public class ConserjeService {
         return conserjeRepositorio.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public long countConcierges() {
+        return conserjeRepositorio.count();
+    }
+
         public void eliminarConserje(Integer id) throws EntidadNoEncontradaException {
         Conserje conserje = conserjeRepositorio.findById(id)
                 .orElseThrow(() -> new EntidadNoEncontradaException("No se puede eliminar. El conserje no existe con ID: " + id));
