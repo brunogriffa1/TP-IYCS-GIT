@@ -43,7 +43,8 @@ class ConciergeCountTest {
         mockMvc.perform(get("/api/conserjes/stats/count"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.total").value(0));
+                .andExpect(jsonPath("$.total").value(0))
+                .andExpect(jsonPath("$.message").value("Registered concierges"));
     }
 
     @Test
@@ -55,6 +56,7 @@ class ConciergeCountTest {
         mockMvc.perform(get("/api/conserjes/stats/count"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.total").value(2));
+                .andExpect(jsonPath("$.total").value(2))
+                .andExpect(jsonPath("$.message").value("Registered concierges"));
     }
 }
